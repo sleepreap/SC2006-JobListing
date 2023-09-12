@@ -1,0 +1,26 @@
+{
+  "name": "Project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@react-google-maps/api": "^2.19.2",
+    "body-parser": "^1.20.2",
+    "dotenv": "^16.3.1",
+    "ejs": "^2.6.1",
+    "express": "^4.16.3",
+    "mongoose": "^7.5.0",
+    "mysql2": "^2.3.3",
+    "path": "^0.12.7",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "sequelize": "^6.32.1",
+    "sequelize-transforms": "^2.0.0"
+  }
+}
