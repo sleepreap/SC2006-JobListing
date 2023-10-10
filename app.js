@@ -2,24 +2,10 @@ var mysql = require("mysql2/promise");
 var dotenv = require("dotenv");
 dotenv.config();
 
-//database
-var myDatabase = require("./controllers/sqlDatabase");
-var sequelizeInstance = myDatabase.sequelizeInstance;
-
 var express = require("express");
 var app = express();
 var path = require("path");
 
-var bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-
-// var sequelizeSessionStore = new SessionStore({
-//     db: myDatabase.sequelizeInstance,
-// });
-
-var Bids = require("./models/bid");
-var Jobs = require("./models/jobs");
 const mongoose = require("mongoose");
 
 //MiddleWare
@@ -35,10 +21,6 @@ app.get("/", (req, res) => {
 
 var jobRoutes = require("./routes/jobRoutes");
 app.use("/jobList", jobRoutes);
-
-// app.get('/jobList', (req,res) => {
-//     res.render('jobList');
-// });
 
 //connect to mongodb
 mongoose

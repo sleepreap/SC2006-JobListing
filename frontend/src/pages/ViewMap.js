@@ -2,6 +2,7 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { useState } from "react";
 import { Icon } from "leaflet";
+import "../";
 
 function ViewMap() {
   const [lat, setLat] = useState("");
@@ -59,35 +60,12 @@ function ViewMap() {
         style={{ width: "100%", height: "500px" }}
       >
         <TileLayer
-          url="https://www.onemap.gov.sg/maps/tiles/Default/{z}/{x}/{y}.png"
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           detectRetina={true}
           maxZoom={19}
           minZoom={11}
           // Add the attribution here as a JSX element
-          attribution={
-            <div>
-              <img
-                src="https://www.onemap.gov.sg/web-assets/images/logo/om_logo.png"
-                style={{ height: "20px", width: "20px" }}
-                alt="OneMap Logo"
-              />
-              <a
-                href="https://www.onemap.gov.sg/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                OneMap
-              </a>
-              &nbsp;©&nbsp;contributors&nbsp;|&nbsp;
-              <a
-                href="https://www.sla.gov.sg/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Singapore Land Authority
-              </a>
-            </div>
-          }
+          attribution='<img src="https://www.onemap.gov.sg/web-assets/images/logo/om_logo.png" style="height:20px;width:20px;"/>&nbsp;<a href="https://www.onemap.gov.sg/" target="_blank" rel="noopener noreferrer">OneMap</a>&nbsp;&copy;&nbsp;contributors&nbsp;&#124;&nbsp;<a href="https://www.sla.gov.sg/" target="_blank" rel="noopener noreferrer">Singapore Land Authority</a>'
         />
         {jobMarkers.map((marker) => (
           <Marker key={marker.id} position={marker.geocode} icon={JobIcon}>
