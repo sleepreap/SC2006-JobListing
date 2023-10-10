@@ -1,8 +1,8 @@
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import "../index.css";
 import { useState } from "react";
 import { Icon } from "leaflet";
-import "../";
 
 function ViewMap() {
   const [lat, setLat] = useState("");
