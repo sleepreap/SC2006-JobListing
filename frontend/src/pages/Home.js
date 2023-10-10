@@ -18,6 +18,7 @@ const Home = () => {
     };
     fetchJobListing();
   }, [dispatch]);
+
   return (
     <div className="home">
       <div className="job">

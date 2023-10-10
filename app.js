@@ -9,6 +9,9 @@ const mongoose = require("mongoose");
 //MiddleWare
 app.use(express.json());
 
+var jobRoutes = require("./routes/jobRoutes");
+app.use("/jobList", jobRoutes);
+
 //connect to mongodb
 mongoose
   .connect(process.env.MONGO_URI)

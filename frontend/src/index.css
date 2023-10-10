@@ -12,8 +12,8 @@ code {
     monospace;
 }
 
-.leaflet-container {
-  height: 150vh;
+/* .leaflet-container {
+  height: 90vh;
   width: 90%;
   border-radius: 2rem;
-}
+} */
