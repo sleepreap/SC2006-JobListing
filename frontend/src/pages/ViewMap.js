@@ -21,6 +21,15 @@ function ViewMap() {
 
       if (response.ok) {
         dispatch({ type: "SET_JOBLISTINGS", payload: json });
+
+        const currentDate = new Date(); // Creates a new Date object with the current date and time
+
+        // You can format the date as needed, for example:
+        const formattedDate = currentDate.toDateString(); // Converts the date to a human-readable string
+        const currentTime = currentDate.toTimeString(); // Converts the time to a human-readable string
+
+        console.log("Date is :", formattedDate);
+        console.log("Time is :", currentTime);
       }
     };
     fetchJobListing();
@@ -134,7 +143,12 @@ function ViewMap() {
 
             return (
               <Marker key={marker._id} position={position} icon={JobIcon}>
-                <Popup>{marker.description}</Popup>
+                <Popup>
+                  <div>
+                    <p>{"Company: " + marker.description}</p>
+                    <p>{"Postal code: " + marker.location}</p>
+                  </div>
+                </Popup>
               </Marker>
             );
           })}
