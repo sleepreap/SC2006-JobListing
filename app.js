@@ -9,7 +9,12 @@ const mongoose = require("mongoose");
 //MiddleWare
 app.use(express.json());
 
-var jobRoutes = require("./routes/jobRoutes");
+//login routes
+const userRoutes = require("./routes/userRoutes");
+app.use("/user", userRoutes);
+
+//mainpage routes
+const jobRoutes = require("./routes/jobRoutes");
 app.use("/jobList", jobRoutes);
 
 //connect to mongodb
