@@ -1,11 +1,20 @@
 import { useJobsContext } from "../hooks/useJobsContext";
 import { Link } from "react-router-dom";
+import { useAuthContext } from "../hooks/useAuthContext";
+
 const JobListingDetails = ({ jobs }) => {
   const { dispatch } = useJobsContext();
+  const { user } = useAuthContext();
 
   const handleClick = async () => {
+    if (!user) {
+      return;
+    }
     const response = await fetch("/jobList/" + jobs._id, {
       method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${user.token}`,
+      },
     });
     const json = await response.json();
 

@@ -1,17 +1,23 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react"; // Import useEffect and useState
+import { useAuthContext } from "../hooks/useAuthContext";
 
 const JobDetails = () => {
   const { id } = useParams();
 
   // Declare a state variable to store the JSON data
   const [jobData, setJobData] = useState(null);
+  const { user } = useAuthContext();
 
   // Use useEffect to fetch the data when the component mounts
   useEffect(() => {
     const fetchJobListing = async () => {
       try {
-        const response = await fetch("/joblist/" + id);
+        const response = await fetch("/joblist/" + id, {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        });
         const json = await response.json();
         setJobData(json); // Update the state with the JSON data
       } catch (error) {
@@ -19,7 +25,7 @@ const JobDetails = () => {
       }
     };
     fetchJobListing();
-  }, [id]); // Include id as a dependency to fetch data when it changes
+  }, [id, user]); // Include id as a dependency to fetch data when it changes
 
   return (
     <div className="jobdetail">

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useJobsContext } from "../hooks/useJobsContext";
+import { useAuthContext } from "../hooks/useAuthContext";
 
 const JobForm = () => {
   const [title, setTitle] = useState("");
@@ -8,10 +9,14 @@ const JobForm = () => {
   const [description, setDescription] = useState("");
   const [error, setError] = useState(null);
   const { dispatch } = useJobsContext();
+  const { user } = useAuthContext();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    if (!user) {
+      setError("You must be logged in");
+      return;
+    }
     const job = { title, type, location, description };
 
     const response = await fetch("/joblist", {
@@ -19,6 +24,7 @@ const JobForm = () => {
       body: JSON.stringify(job),
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${user.token}`,
       },
     });
     const json = await response.json();

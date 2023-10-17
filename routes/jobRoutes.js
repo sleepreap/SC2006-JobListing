@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-// const jobs = require("../controllers/jobs");
+
 const {
   createJobListing,
   getJobListing,
@@ -8,6 +8,11 @@ const {
   deleteJobListing,
   updateJobListing,
 } = require("../controllers/jobController");
+
+const requireAuth = require("../middleware/requireAuth");
+
+//require auth for all workout routes
+router.use(requireAuth);
 
 //Get all job listings
 router.get("/", getJobListings);
