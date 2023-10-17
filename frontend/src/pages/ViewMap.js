@@ -106,7 +106,7 @@ function ViewMap() {
         style={{ width: "100%", height: "500px" }}
       >
         <TileLayer
-          url="https://www.onemap.gov.sg/maps/tiles/Default/{z}/{x}/{y}.png"
+          url="https://www.onemap.gov.sg/maps/tiles/Default_HD/{z}/{x}/{y}.png"
           detectRetina={true}
           maxZoom={19}
           minZoom={11}

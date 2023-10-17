@@ -19,7 +19,7 @@ const userSchema = new Schema({
 });
 
 //create static model
-// cannot use arrow function else this does not work
+// cannot use arrow function else this. does not work
 userSchema.statics.signup = async function (email, password) {
   const exists = await this.findOne({ email });
 
@@ -44,6 +44,27 @@ userSchema.statics.signup = async function (email, password) {
   const hash = await bcrypt.hash(password, salt);
 
   const user = await this.create({ email, password: hash });
+
+  return user;
+};
+//create static login method
+userSchema.statics.login = async function (email, password) {
+  if (!email || !password) {
+    throw Error(" All Fields must be filled");
+  }
+
+  const user = await this.findOne({ email });
+
+  if (!user) {
+    throw Error("Incorrect Email");
+  }
+
+  const match = await bcrypt.compare(password, user.password);
+  // user.password is the hashed password while password is the plain text
+
+  if (!match) {
+    throw Error("Incorrect password");
+  }
 
   return user;
 };
