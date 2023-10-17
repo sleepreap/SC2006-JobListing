@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react";
 import { Icon } from "leaflet";
 //Fetch job infomation from database
 import { useJobsContext } from "../hooks/useJobsContext";
+import { useAuthContext } from "../hooks/useAuthContext";
 import axios from "axios";
 
 function ViewMap() {
@@ -12,11 +13,16 @@ function ViewMap() {
   const [lat, setLat] = useState("1.3521");
   const [long, setLong] = useState("103.8198");
   const [updateJobs, setUpdateJobs] = useState([]);
+  const { user } = useAuthContext();
 
   // Update whenever new job listing is added
   useEffect(() => {
     const fetchJobListing = async () => {
-      const response = await fetch("/joblist/");
+      const response = await fetch("/joblist/", {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
       const json = await response.json();
 
       if (response.ok) {
@@ -33,7 +39,7 @@ function ViewMap() {
       }
     };
     fetchJobListing();
-  }, [dispatch]);
+  }, [dispatch, user]);
 
   async function fetchLatLong(postalCode) {
     try {
@@ -44,11 +50,11 @@ function ViewMap() {
       const lng = response.data.results[0].LONGITUDE;
       return { lat, lng };
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error fetching lat and long data:", error);
     }
   }
 
-  async function fetchDataWithLatLong(data) {
+  async function fetchDataWithLatLong(jobs) {
     const updatedJobs = await Promise.all(
       jobs.map(async (item) => {
         const postalCode = item.location;
@@ -102,7 +108,7 @@ function ViewMap() {
       <button onClick={handleClick}>Centre Map</button>
       <MapContainer
         center={[lat, long]}
-        zoom={13}
+        zoom={12}
         style={{ width: "100%", height: "500px" }}
       >
         <TileLayer

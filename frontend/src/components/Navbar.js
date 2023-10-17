@@ -14,15 +14,15 @@ const Navbar = () => {
         <Link to="/">
           <h1>Home</h1>
         </Link>
-        <Link to="/createjob">
-          <h1>Create Job Listings</h1>
-        </Link>
         <Link to="/viewmap">
           <h1>View Map</h1>
         </Link>
         <nav>
           {user && (
             <div>
+              <Link to="/createjob">
+                <h1>Create Job Listings</h1>
+              </Link>
               <span>{user.email}</span>
               <button onClick={handleClick}> Logout</button>
             </div>
