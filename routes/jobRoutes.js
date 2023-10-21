@@ -11,7 +11,7 @@ const {
 
 const requireAuth = require("../middleware/requireAuth");
 
-//require auth for all workout routes
+//require auth for all job routes
 router.use(requireAuth);
 
 //Get all job listings

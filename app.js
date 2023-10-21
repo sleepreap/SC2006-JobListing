@@ -13,9 +13,17 @@ app.use(express.json());
 const userRoutes = require("./routes/userRoutes");
 app.use("/user", userRoutes);
 
-//mainpage routes
+//employer routes
 const jobRoutes = require("./routes/jobRoutes");
 app.use("/jobList", jobRoutes);
+
+//unrestricted routes
+const UJobRoutes = require("./routes/UnrestrictedJobRoutes");
+app.use("/employee", UJobRoutes);
+
+// // Resume routes
+// const resumeRoutes = require("./routes/resumeRoutes");
+// app.use("/jobList", resumeRoutes);
 
 //connect to mongodb
 mongoose
