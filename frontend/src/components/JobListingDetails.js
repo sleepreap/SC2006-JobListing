@@ -47,6 +47,11 @@ const JobListingDetails = ({ jobs }) => {
           <Link to="/uploadresume">Upload Resume</Link>
         </button>
       </div>
+      <div>
+        <button>
+          <Link to="/resumesubmissions">Get Resume</Link>
+        </button>
+      </div>
     </div>
   );
 };

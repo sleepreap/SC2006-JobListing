@@ -9,6 +9,7 @@ import SignupForm from "./pages/SignupForm";
 import Loginform from "./pages/LoginForm";
 import { useAuthContext } from "./hooks/useAuthContext";
 import ResumeForm from "./pages/ResumeForm";
+import ResumeSubmissions from "./pages/ResumeSubmissions";
 
 function App() {
   const { user } = useAuthContext();
@@ -33,6 +34,10 @@ function App() {
             <Route path="/viewmap" element={<ViewMap />}></Route>
             <Route path="/joblisting/:id" element={<JobDetails />}></Route>
             <Route path="/uploadresume" element={<ResumeForm />}></Route>
+            <Route
+              path="/resumesubmissions"
+              element={<ResumeSubmissions />}
+            ></Route>
           </Routes>
         </div>
       </BrowserRouter>
