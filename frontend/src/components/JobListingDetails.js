@@ -41,12 +41,14 @@ const JobListingDetails = ({ jobs }) => {
       <p>
         <strong>Description:</strong> {jobs.description}
       </p>
-      <button onClick={handleClick}>Delete</button>
-      <div>
-        <button>
-          <Link to="/uploadresume">Upload Resume</Link>
-        </button>
-      </div>
+      {user && (
+        <div>
+          <button onClick={handleClick}>Delete</button>
+          <button>
+            <Link to="/uploadresume">Upload Resume</Link>
+          </button>
+        </div>
+      )}
     </div>
   );
 };

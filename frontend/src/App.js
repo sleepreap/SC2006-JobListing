@@ -10,7 +10,7 @@ import Loginform from "./pages/LoginForm";
 import { useAuthContext } from "./hooks/useAuthContext";
 import ResumeForm from "./pages/ResumeForm";
 import ResumeSubmissions from "./pages/ResumeSubmissions";
-
+import EmployeePage from "./pages/EmployeePage";
 function App() {
   const { user } = useAuthContext();
   return (
@@ -19,9 +19,12 @@ function App() {
         <Navbar />
         <div className="pages">
           <Routes>
-            <Route exact path="/" element={<Home />}>
-              {/* element={user ? <Home /> : <Navigate to="/login" />}  */}
-            </Route>
+            <Route
+              exact
+              path="/"
+              element={user ? <Home /> : <Navigate to="/employee" />}
+            ></Route>
+            <Route path="/employee" element={<EmployeePage />}></Route>
             <Route path="/createjob" element={<JobForm />}></Route>
             <Route
               path="/signup"

@@ -1,4 +1,5 @@
 const Job = require("../models/jobModel");
+const UJob = require("../models/unrestrictedJobModel");
 const mongoose = require("mongoose");
 
 //get all joblistings
@@ -35,6 +36,12 @@ const createJobListing = async (req, res) => {
       location,
       description,
       user_id,
+    });
+    const ujob = await UJob.create({
+      title,
+      type,
+      location,
+      description,
     });
     res.status(200).json(job);
   } catch (error) {
