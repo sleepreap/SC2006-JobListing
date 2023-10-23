@@ -28,9 +28,13 @@ const JobListingDetails = ({ jobs }) => {
 
   return (
     <div className="joblisting-details">
-      <Link to={`/joblisting/${jobs._id}`}>
-        <h4>{jobs.title}</h4>
-      </Link>
+      {user && (
+        <div>
+          <Link to={`/joblisting/${jobs._id}`}>
+            <h4>{jobs.title}</h4>
+          </Link>
+        </div>
+      )}
 
       <p>
         <strong>Type:</strong> {jobs.type}
