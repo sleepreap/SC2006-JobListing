@@ -6,10 +6,11 @@ const app = express();
 
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
-const path = require("path");
 const multer = require("multer");
-const { GridFsStorage } = require("multer-gridfs-storage");
-const Grid = require("gridfs-stream");
+app.use("/files", express.static("files"));
+
+const cors = require("cors");
+app.use(cors());
 
 //MiddleWare
 app.use(express.json());
@@ -19,7 +20,7 @@ app.use(bodyParser.json());
 const userRoutes = require("./routes/userRoutes");
 app.use("/user", userRoutes);
 
-//employer routes
+//job routes with logins
 const jobRoutes = require("./routes/jobRoutes");
 app.use("/jobList", jobRoutes);
 
@@ -40,76 +41,52 @@ const connection = mongoose
   });
 
 //resume portion
-let gfs;
 
-// Create new mongo connection
-const conn = mongoose.createConnection(process.env.MONGO_URI);
-conn.once("open", () => {
-  //init stream
-  gfs = Grid(conn.db, mongoose.mongo);
-  gfs.collection("uploads");
-  gridfsBucket = new mongoose.mongo.GridFSBucket(conn.db, {
-    bucketName: "upload",
-  });
-});
+const Resume = require("./models/resumeModel");
 
-// Create storage engine
-const storage = new GridFsStorage({
-  url: process.env.MONGO_URI,
-  file: (req, file) => {
-    return new Promise((resolve, reject) => {
-      const filename = file.originalname;
-      const fileInfo = {
-        filename: filename,
-        bucketName: "uploads",
-        //bucketName same as collection name
-      };
-      resolve(fileInfo);
-    });
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./files");
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now();
+    cb(null, uniqueSuffix + file.originalname);
   },
 });
-const upload = multer({ storage });
+const upload = multer({ storage: storage });
 
-//resume routes
-
-//upload resume, "file" is the same name as what is the name in the input file form
-app.post("/uploadresume/upload", upload.single("file"), (req, res) => {
-  //res.json({ file: req.file });
-  res.redirect("/");
-});
-
-//get all resumes in json
-app.get("/files", async (req, res) => {
+app.post("/uploadresume/upload", upload.single("file"), async (req, res) => {
+  console.log(req.file);
+  const fileName = req.file.filename;
+  const employerName = req.body.employername;
+  // console.log(fileName);
+  // console.log(employerName);
   try {
-    const files = await gfs.files.find().toArray();
-    res.json(files);
+    const resume = await Resume.create({
+      filename: fileName,
+      employername: employerName,
+    });
+    res.status(200).json(resume);
   } catch (error) {
-    res.status(404).json({ err });
+    res.status(404).json({ err: error });
   }
 });
 
-//get specific resume in json
-app.get("/files/:filename", async (req, res) => {
-  const filename = req.params.filename;
-  const file = await gfs.files.findOne({ filename });
-  if (!file) {
-    return res.status(404).json({ error: "File not found" });
-  }
-  //console.log(file);
-  res.json(file);
+app.get("/resumes", async (req, res) => {
+  const resume = await Resume.find().sort({ createdAt: -1 });
+  res.status(200).json(resume);
 });
 
-// //display specific resume
-// app.get("/files/display/:filename", async (req, res) => {
-//   const filename = req.params.filename;
-//   const file = await gfs.files.findOne({ filename });
-//   if (!file) {
-//     return res.status(404).json({ error: "File not found" });
-//   }
-//   console.log(file);
-//   console.log(file.filename);
-//   const readstream = gfs.createReadStream({
-//     filename: file.filename,
-//   });
-//   readstream.pipe(res);
-// });
+app.get("/resumes/:id", async (req, res) => {
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ error: "No Such Resume" });
+  }
+
+  const resume = await Resume.findById(id);
+  if (!resume) {
+    return res.status(400).json({ error: "No Such Resume" });
+  }
+
+  res.status(200).json(resume);
+});
