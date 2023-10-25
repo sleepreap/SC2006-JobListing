@@ -16,6 +16,7 @@ import {
   GoogleMap,
   MarkerF,
   DirectionsRenderer,
+  Autocomplete,
 } from "@react-google-maps/api";
 import "../index";
 //Fetch job infomation from database
@@ -26,10 +27,11 @@ import axios from "axios";
 function ViewGoogleMap() {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: "AIzaSyCicXzzMnYF5w3QX3b0EZJWu-3mxhYdqlI",
+    libraries: ["places"],
   });
 
   //Google Map Constants
-  const center = { lat: 1.3521, lng: 103.8198 };
+  //const center = { lat: 1.3521, lng: 103.8198 };
   const [map, setMap] = useState(/** @type google.maps.Map */ (null));
   const [directionResponse, setDirectionResponse] = useState(null);
   const [distance, setDistance] = useState("");
@@ -39,25 +41,16 @@ function ViewGoogleMap() {
   const { jobs, dispatch } = useJobsContext();
   const { user } = useAuthContext();
   const [latLngCache, setlatLngCache] = useState([]);
-  //const [center, setCenter] = useState({ lat: 1.3521, lng: 103.8198 });
-  const [lat, setLat] = useState("1.3521");
-  const [lng, setLng] = useState("103.8198");
+  const [center, setCenter] = useState({ lat: 1.3521, lng: 103.8198 });
+  const [lat, setLat] = useState(1.3521);
+  const [lng, setLng] = useState(103.8198);
 
   //markers
   const homeMarker = {
     id: 1,
-    geocode: [lat, lng],
+    geocode: { lat, lng },
     popUp: "Current Location",
   };
-  //   const JobIcon = new Icon({
-  //     iconUrl: " https://cdn-icons-png.flaticon.com/512/2377/2377874.png",
-  //     iconSize: [38, 38],
-  //   });
-
-  //   const homeMarkerIcon = new Icon({
-  //     iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
-  //     iconSize: [38, 38],
-  //   });
 
   /** @type React.MutableRefObject<HTMLInputElement> */
   const originRef = useRef();
@@ -109,6 +102,7 @@ function ViewGoogleMap() {
         if (results && results.lat !== undefined && results.lng !== undefined) {
           const latLngtemp = {
             id: postalCode,
+            title: item.description,
             lat: results.lat,
             lng: results.lng,
           };
@@ -138,6 +132,7 @@ function ViewGoogleMap() {
     const success = (position) => {
       const lat = position.coords.latitude;
       const lng = position.coords.longitude;
+      setCenter({ lat: lat, lng: lng });
       setLat(lat);
       setLng(lng);
     };
@@ -190,13 +185,16 @@ function ViewGoogleMap() {
           <GoogleMap
             center={center}
             zoom={12}
-            mapContainerStyle={{ width: "100%", height: "90%" }}
+            mapContainerStyle={{ width: "100%", height: "80%" }}
             options={{
               streetViewControl: false,
               mapTypeControl: false,
               fullscreenControl: false,
             }}
-            onLoad={(map) => setMap(map)}
+            onLoad={(map) => {
+              setMap(map);
+              map.panTo(homeMarker.geocode);
+            }}
           >
             {latLngCache.length > 0 &&
               latLngCache.map((item) => {
@@ -209,10 +207,28 @@ function ViewGoogleMap() {
                   // You can also access other properties from the `marker` object here
                 );
               })}
-            <MarkerF position={center}></MarkerF>
+            <MarkerF
+              key={homeMarker.id}
+              position={homeMarker.geocode}
+              icon={{
+                url: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
+                scaledSize: { width: 38, height: 38 },
+              }}
+            ></MarkerF>
             {directionResponse && (
               <DirectionsRenderer directions={directionResponse} />
             )}
+            {latLngCache.length > 0 &&
+              latLngCache.map((item) => {
+                console.log("item is ", item);
+                console.log("lat is ", item.lat);
+                const position = { lat: item.lat, lng: item.lng };
+
+                return (
+                  <MarkerF key={item.id} position={position} />
+                  // You can also access other properties from the `marker` object here
+                );
+              })}
           </GoogleMap>
         </Box>
         <Box
@@ -224,9 +240,17 @@ function ViewGoogleMap() {
           minW="container.md"
           zIndex="1"
         >
-          <HStack spacing={4}>
-            <Input type="text" placeholder="Origin" ref={originRef} />
-            <Input type="text" placeholder="Destination" ref={destinationRef} />
+          <HStack spacing={8}>
+            <Autocomplete>
+              <Input type="text" placeholder="Origin" ref={originRef} />
+            </Autocomplete>
+            <Autocomplete>
+              <Input
+                type="text"
+                placeholder="Destination"
+                ref={destinationRef}
+              />
+            </Autocomplete>
             <ButtonGroup>
               <Button colorScheme="pink" type="submit" onClick={calculateRoute}>
                 Calculate Route
@@ -245,7 +269,7 @@ function ViewGoogleMap() {
               aria-label="center back"
               icon={<FaLocationArrow />}
               isRound
-              onClick={() => map.panTo(center)}
+              onClick={() => map.panTo(homeMarker.geocode)}
             />
           </HStack>
         </Box>
