@@ -17,6 +17,7 @@ import {
   MarkerF,
   DirectionsRenderer,
   Autocomplete,
+  InfoWindowF,
 } from "@react-google-maps/api";
 import "../index";
 //Fetch job infomation from database
@@ -48,8 +49,17 @@ function ViewGoogleMap() {
   //markers
   const homeMarker = {
     id: 1,
+    title: "Current Location",
     geocode: { lat, lng },
-    popUp: "Current Location",
+  };
+
+  const [activeMarker, setActiveMarker] = useState(null);
+
+  const handleActiveMarker = (marker) => {
+    if (marker === activeMarker) {
+      return;
+    }
+    setActiveMarker(marker);
   };
 
   /** @type React.MutableRefObject<HTMLInputElement> */
@@ -185,6 +195,7 @@ function ViewGoogleMap() {
           <GoogleMap
             center={center}
             zoom={12}
+            onClick={() => setActiveMarker(null)}
             mapContainerStyle={{ width: "100%", height: "80%" }}
             options={{
               streetViewControl: false,
@@ -196,28 +207,24 @@ function ViewGoogleMap() {
               map.panTo(homeMarker.geocode);
             }}
           >
-            {latLngCache.length > 0 &&
-              latLngCache.map((item) => {
-                console.log("item is ", item);
-                console.log("lat is ", item.lat);
-                const position = { lat: item.lat, lng: item.lng };
-
-                return (
-                  <MarkerF key={item.id} position={position} />
-                  // You can also access other properties from the `marker` object here
-                );
-              })}
+            {directionResponse && (
+              <DirectionsRenderer directions={directionResponse} />
+            )}
             <MarkerF
               key={homeMarker.id}
               position={homeMarker.geocode}
               icon={{
-                url: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
+                url: " https://cdn-icons-png.flaticon.com/512/684/684908.png",
                 scaledSize: { width: 38, height: 38 },
               }}
-            ></MarkerF>
-            {directionResponse && (
-              <DirectionsRenderer directions={directionResponse} />
-            )}
+              onClick={() => handleActiveMarker(homeMarker.id)}
+            >
+              {activeMarker === homeMarker.id ? (
+                <InfoWindowF onCloseClick={() => handleActiveMarker(null)}>
+                  <div>{homeMarker.title}</div>
+                </InfoWindowF>
+              ) : null}
+            </MarkerF>
             {latLngCache.length > 0 &&
               latLngCache.map((item) => {
                 console.log("item is ", item);
@@ -225,8 +232,23 @@ function ViewGoogleMap() {
                 const position = { lat: item.lat, lng: item.lng };
 
                 return (
-                  <MarkerF key={item.id} position={position} />
-                  // You can also access other properties from the `marker` object here
+                  <MarkerF
+                    key={item.id}
+                    position={position}
+                    icon={{
+                      url: " https://cdn-icons-png.flaticon.com/512/2377/2377874.png",
+                      scaledSize: { width: 38, height: 38 },
+                    }}
+                    onClick={() => handleActiveMarker(item.id)}
+                  >
+                    {activeMarker === item.id ? (
+                      <InfoWindowF
+                        onCloseClick={() => handleActiveMarker(null)}
+                      >
+                        <div>{item.title}</div>
+                      </InfoWindowF>
+                    ) : null}
+                  </MarkerF>
                 );
               })}
           </GoogleMap>
