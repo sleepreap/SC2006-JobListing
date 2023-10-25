@@ -167,7 +167,22 @@ function ViewGoogleMap() {
     setDirectionResponse(result);
     console.log(result);
     setDistance(result.routes[0].legs[0].distance.text);
-    setDuration(result.routes[0].legs[0].distance.text);
+    setDuration(result.routes[0].legs[0].duration.text);
+  };
+
+  const calculateMarkerRoute = async (position) => {
+    // eslint-disable-next-line no-undef
+    const directionService = new google.maps.DirectionsService();
+    const result = await directionService.route({
+      origin: homeMarker.geocode,
+      destination: position,
+      // eslint-disable-next-line no-undef
+      travelMode: google.maps.TravelMode.DRIVING,
+    });
+    setDirectionResponse(result);
+    console.log(result);
+    setDistance(result.routes[0].legs[0].distance.text);
+    setDuration(result.routes[0].legs[0].duration.text);
   };
 
   const clearRoute = () => {
@@ -195,7 +210,12 @@ function ViewGoogleMap() {
           <GoogleMap
             center={center}
             zoom={12}
-            onClick={() => setActiveMarker(null)}
+            onClick={() => {
+              setActiveMarker(null);
+              setDirectionResponse(null);
+              setDistance("");
+              setDuration("");
+            }}
             mapContainerStyle={{ width: "100%", height: "80%" }}
             options={{
               streetViewControl: false,
@@ -208,15 +228,20 @@ function ViewGoogleMap() {
             }}
           >
             {directionResponse && (
-              <DirectionsRenderer directions={directionResponse} />
+              <DirectionsRenderer
+                directions={directionResponse}
+                options={{
+                  polylineOptions: {
+                    zIndex: 50,
+                    strokeColor: "#1976D2",
+                    strokeWeight: 5,
+                  },
+                }}
+              />
             )}
             <MarkerF
               key={homeMarker.id}
               position={homeMarker.geocode}
-              icon={{
-                url: " https://cdn-icons-png.flaticon.com/512/684/684908.png",
-                scaledSize: { width: 38, height: 38 },
-              }}
               onClick={() => handleActiveMarker(homeMarker.id)}
             >
               {activeMarker === homeMarker.id ? (
@@ -235,11 +260,10 @@ function ViewGoogleMap() {
                   <MarkerF
                     key={item.id}
                     position={position}
-                    icon={{
-                      url: " https://cdn-icons-png.flaticon.com/512/2377/2377874.png",
-                      scaledSize: { width: 38, height: 38 },
+                    onClick={() => {
+                      handleActiveMarker(item.id);
+                      calculateMarkerRoute(position);
                     }}
-                    onClick={() => handleActiveMarker(item.id)}
                   >
                     {activeMarker === item.id ? (
                       <InfoWindowF
