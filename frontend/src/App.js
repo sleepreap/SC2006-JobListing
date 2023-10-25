@@ -11,6 +11,8 @@ import { useAuthContext } from "./hooks/useAuthContext";
 import ResumeForm from "./pages/ResumeForm";
 import ResumeSubmissions from "./pages/ResumeSubmissions";
 import EmployeePage from "./pages/EmployeePage";
+import ViewGoogleMap from "./pages/ViewGoogleMap";
+
 function App() {
   const { user } = useAuthContext();
   return (
@@ -19,11 +21,7 @@ function App() {
         <Navbar />
         <div className="pages">
           <Routes>
-            <Route
-              exact
-              path="/"
-              element={user ? <Home /> : <Navigate to="/employee" />}
-            ></Route>
+            <Route exact path="/" element={<Home />}></Route>
             <Route path="/employee" element={<EmployeePage />}></Route>
             <Route path="/createjob" element={<JobForm />}></Route>
             <Route
@@ -34,7 +32,10 @@ function App() {
               path="/login"
               element={!user ? <Loginform /> : <Navigate to="/" />}
             ></Route>
-            <Route path="/viewmap" element={<ViewMap />}></Route>
+            <Route
+              path="/viewmap"
+              element={user ? <ViewGoogleMap /> : <Navigate to="/employee" />}
+            ></Route>
             <Route path="/joblisting/:id" element={<JobDetails />}></Route>
             <Route path="/uploadresume" element={<ResumeForm />}></Route>
             <Route

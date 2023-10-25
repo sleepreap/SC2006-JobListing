@@ -4,13 +4,16 @@ import "./index.css";
 import App from "./App";
 import { JobListingContextProvider } from "./context/JobListingContext";
 import { AuthContextProvider } from "./context/AuthContext";
+import { ChakraProvider, theme } from "@chakra-ui/react";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <AuthContextProvider>
       <JobListingContextProvider>
-        <App />
+        <ChakraProvider theme={theme}>
+          <App />
+        </ChakraProvider>
       </JobListingContextProvider>
     </AuthContextProvider>
   </React.StrictMode>
