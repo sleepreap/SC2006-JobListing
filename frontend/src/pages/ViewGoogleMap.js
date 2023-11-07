@@ -37,6 +37,7 @@ function ViewGoogleMap() {
   const [directionResponse, setDirectionResponse] = useState(null);
   const [distance, setDistance] = useState("");
   const [duration, setDuration] = useState("");
+  const [routeSteps, setRouteSteps] = useState([]);
 
   //Fetching jobs Constants
   const { jobs, dispatch } = useJobsContext();
@@ -151,6 +152,16 @@ function ViewGoogleMap() {
     };
     navigator.geolocation.getCurrentPosition(success, error);
   };
+  const stripHtmlTags = (str) => {
+    return str.replace(/<[^>]*>/g, "");
+  };
+  const getRouteSteps = (result) => {
+    let temp = [];
+    const steps = result.routes[0].legs[0].steps;
+    steps.map((step) => temp.push(step.instructions)); //
+    temp = temp.map(stripHtmlTags);
+    setRouteSteps(temp);
+  };
 
   const calculateRoute = async () => {
     if (originRef.current.value === "" || destinationRef.current.value === "") {
@@ -166,6 +177,7 @@ function ViewGoogleMap() {
     });
     setDirectionResponse(result);
     console.log(result);
+    getRouteSteps(result);
     setDistance(result.routes[0].legs[0].distance.text);
     setDuration(result.routes[0].legs[0].duration.text);
   };
@@ -318,6 +330,14 @@ function ViewGoogleMap() {
               onClick={() => map.panTo(homeMarker.geocode)}
             />
           </HStack>
+
+          {routeSteps &&
+            routeSteps.map((step, index) => (
+              <span key={index}>
+                {step}
+                <br></br>
+              </span>
+            ))}
         </Box>
       </Flex>
     </div>

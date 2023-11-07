@@ -8,11 +8,13 @@ import { ChakraProvider, theme } from "@chakra-ui/react";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <AuthContextProvider>
-    <JobListingContextProvider>
-      <ChakraProvider theme={theme}>
-        <App />
-      </ChakraProvider>
-    </JobListingContextProvider>
-  </AuthContextProvider>
+  <React.StrictMode>
+    <AuthContextProvider>
+      <JobListingContextProvider>
+        <ChakraProvider theme={theme}>
+          <App />
+        </ChakraProvider>
+      </JobListingContextProvider>
+    </AuthContextProvider>
+  </React.StrictMode>
 );
