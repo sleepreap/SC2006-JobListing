@@ -38,6 +38,7 @@ function ViewGoogleMap() {
   const [distance, setDistance] = useState("");
   const [duration, setDuration] = useState("");
   const [routeSteps, setRouteSteps] = useState([]);
+  const [taxiCount, setTaxiCount] = useState(0);
 
   //Fetching jobs Constants
   const { jobs, dispatch } = useJobsContext();
@@ -146,6 +147,7 @@ function ViewGoogleMap() {
       setCenter({ lat: lat, lng: lng });
       setLat(lat);
       setLng(lng);
+      getTaxiAvailability();
     };
     const error = () => {
       console.log("unable to get your location");
@@ -203,6 +205,70 @@ function ViewGoogleMap() {
     setDuration("");
     originRef.current.value = "";
     destinationRef.current.value = "";
+  };
+
+  async function fetchLatLong(postalCode) {
+    try {
+      const response = await axios.get(
+        `https://developers.onemap.sg/commonapi/search?searchVal=${postalCode}&returnGeom=Y&getAddrDetails=Y&pageNum=1`
+      );
+      if (response.data.results && response.data.results.length > 0) {
+        console.log("lat and lng returned from API");
+        const lat = parseFloat(response.data.results[0].LATITUDE);
+        const lng = parseFloat(response.data.results[0].LONGITUDE);
+        return { lat, lng };
+      }
+    } catch (error) {
+      console.error("Error fetching lat and long data:", error);
+    }
+  }
+  const countNearbyCoordinates = (
+    allCoordinates,
+    targetLat,
+    targetLng,
+    delta = 0.01
+  ) => {
+    // all coordinates must be an 1D array e,g [100,1.03,103,1.035...]
+    //+- 0.005 degrees is about 500m difference
+    let count = 0;
+    for (let i = 0; i < allCoordinates.length; i += 2) {
+      let lat = allCoordinates[i + 1];
+      let lon = allCoordinates[i];
+      if (
+        Math.abs(lat - targetLat) <= delta &&
+        Math.abs(lon - targetLng) <= delta
+      ) {
+        count++;
+      }
+    }
+    return count;
+  };
+
+  const getTaxiAvailability = async () => {
+    const targetLat = lat;
+    const targetLon = lng;
+    try {
+      const response = await axios.get(
+        "https://api.data.gov.sg/v1/transport/taxi-availability"
+      );
+      if (response.status === 200) {
+        //console.log("taxi:", response);
+        const coordinateReponse =
+          response.data.features[0].geometry.coordinates;
+        const allCoordinates = coordinateReponse.flat();
+        //console.log("Total taxi:", allCoordinates);
+
+        // Get the count of nearby coordinates
+        const nearbyCount = countNearbyCoordinates(
+          allCoordinates,
+          targetLat,
+          targetLon
+        );
+        console.log("taxiCount:", nearbyCount);
+      }
+    } catch (error) {
+      console.error("Error fetching taxi availability");
+    }
   };
 
   if (!isLoaded) {
